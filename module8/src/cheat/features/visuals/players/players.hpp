@@ -9,7 +9,7 @@ namespace cheat {
 		struct box_t {
 			bool enable{false};
 			int type{0};
-			float length{2.0f};
+			float length{20.0f};
 			bool fill{false};
 
 			ImVec4 color = ImVec4( 0.510f, 0.478f, 0.435f, 1.0f );

@@ -2,8 +2,9 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <src/graphics/framework/settings/variables.h>
+#include <src/cheat/features/visuals/players/players.hpp>
 
-namespace o {
+namespace graphics {
 	struct layout_t {
 		enum e_layout : std::uint8_t {
 			top = 0,
@@ -78,35 +79,56 @@ namespace o {
 			draw->AddRect( ImVec2( rounded_pos.x - 1.f, rounded_pos.y - 1.f ), ImVec2( rect_max.x + 1.f, rect_max.y + 1.f ), col, rounding, 0, thickness );
 		}
 
-		void corner( const ImVec2& pos, const ImVec2& size, ImU32 col, float thickness, float length ) {
-			ImVec2 rounded_pos( std::round( pos.x ), std::round( pos.y ) );
-			ImVec2 rounded_size( std::round( size.x ), std::round( size.y ) );
+		void corner( const ImVec2& pos, const ImVec2& size, ImU32 col, float rounding = 0.f, float length = 20.0f ) {
+			auto draw = ImGui::GetBackgroundDrawList( );
 
-			ImVec2 rect_max(
-				rounded_pos.x + rounded_size.x,
-				rounded_pos.y + rounded_size.y
-			);
+			float X = pos.x;
+			float Y = pos.y;
+			float W = size.x;
+			float H = size.y;
 
-			ImDrawList* draw = ImGui::GetBackgroundDrawList( );
-			ImU32 outline = IM_COL32( 0, 0, 0, col >> 24 );
+			float lineW = size.x / length;
+			float lineH = size.y / length;
+			float lineT = 1;
+			float topOffset = 1.0f;
 
-			auto draw_corners = [&]( const ImVec2& min, const ImVec2& max, ImU32 color ) {
-				draw->AddLine( min, ImVec2( min.x + length, min.y ), color, thickness );
-				draw->AddLine( min, ImVec2( min.x, min.y + length ), color, thickness );
+			auto outline = IM_COL32( 0, 0, 0, col >> 24 );
 
-				draw->AddLine( ImVec2( max.x - length, min.y ), ImVec2( max.x, min.y ), color, thickness );
-				draw->AddLine( ImVec2( max.x, min.y ), ImVec2( max.x, min.y + length ), color, thickness );
+			draw->AddLine( {roundf( X - lineT + 1.f ), roundf( Y - lineT - topOffset )}, {roundf( X + lineW ), roundf( Y - lineT - topOffset )}, outline );
+			draw->AddLine( {roundf( X - lineT ), roundf( Y - lineT - topOffset )}, {roundf( X - lineT ), roundf( Y + lineH )}, outline );
 
-				draw->AddLine( ImVec2( min.x, max.y - length ), ImVec2( min.x, max.y ), color, thickness );
-				draw->AddLine( ImVec2( min.x, max.y ), ImVec2( min.x + length, max.y ), color, thickness );
+			draw->AddLine( {roundf( X + W - lineW ), roundf( Y - lineT - topOffset )}, {roundf( X + W + lineT ), roundf( Y - lineT - topOffset )}, outline );
+			draw->AddLine( {roundf( X + W + lineT ), roundf( Y - lineT - topOffset )}, {roundf( X + W + lineT ), roundf( Y + lineH )}, outline );
 
-				draw->AddLine( ImVec2( max.x - length, max.y ), ImVec2( max.x, max.y ), color, thickness );
-				draw->AddLine( ImVec2( max.x, max.y - length ), ImVec2( max.x, max.y ), color, thickness );
-				};
+			draw->AddLine( {roundf( X + W + lineT ), roundf( Y + H - lineH )}, {roundf( X + W + lineT ), roundf( Y + H + lineT )}, outline );
+			draw->AddLine( {roundf( X + W - lineW ), roundf( Y + H + lineT )}, {roundf( X + W + lineT ), roundf( Y + H + lineT )}, outline );
 
-			draw_corners( ImVec2( rounded_pos.x - 2.f, rounded_pos.y - 2.f ), ImVec2( rect_max.x + 2.f, rect_max.y + 2.f ), outline );
-			draw_corners( ImVec2( rounded_pos.x - 1.f, rounded_pos.y - 1.f ), ImVec2( rect_max.x + 1.f, rect_max.y + 1.f ), outline );
-			draw_corners( rounded_pos, rect_max, col );
+			draw->AddLine( {roundf( X - lineT ), roundf( Y + H - lineH )}, {roundf( X - lineT ), roundf( Y + H + lineT )}, outline );
+			draw->AddLine( {roundf( X - lineT ), roundf( Y + H + lineT )}, {roundf( X + lineW ), roundf( Y + H + lineT )}, outline );
+
+			draw->AddLine( {roundf( X - ( lineT - 3 ) ), roundf( Y - ( lineT - 2 ) - topOffset )}, {roundf( X + lineW ), roundf( Y - ( lineT - 2 ) - topOffset )}, outline );
+			draw->AddLine( {roundf( X - ( lineT - 2 ) ), roundf( Y - ( lineT - 2 ) - topOffset )}, {roundf( X - ( lineT - 2 ) ), roundf( Y + lineH )}, outline );
+
+			draw->AddLine( {roundf( X - ( lineT - 2 ) ), roundf( Y + H - lineH )}, {roundf( X - ( lineT - 2 ) ), roundf( Y + H + ( lineT - 2 ) )}, outline );
+			draw->AddLine( {roundf( X - ( lineT - 2 ) ), roundf( Y + H + ( lineT - 2 ) )}, {roundf( X + lineW ), roundf( Y + H + ( lineT - 2 ) )}, outline );
+
+			draw->AddLine( {roundf( X + W - lineW ), roundf( Y - ( lineT - 2 ) - topOffset )}, {roundf( X + W + ( lineT - 2 ) ), roundf( Y - ( lineT - 2 ) - topOffset )}, outline );
+			draw->AddLine( {roundf( X + W + ( lineT - 2 ) ), roundf( Y - ( lineT - 2 ) - topOffset )}, {roundf( X + W + ( lineT - 2 ) ), roundf( Y + lineH )}, outline );
+
+			draw->AddLine( {roundf( X + W + ( lineT - 2 ) ), roundf( Y + H - lineH )}, {roundf( X + W + ( lineT - 2 ) ), roundf( Y + H + ( lineT - 2 ) )}, outline );
+			draw->AddLine( {roundf( X + W - lineW ), roundf( Y + H + ( lineT - 2 ) )}, {roundf( X + W + ( lineT - 2 ) ), roundf( Y + H + ( lineT - 2 ) )}, outline );
+
+			draw->AddLine( {roundf( X ), roundf( Y - topOffset )}, {roundf( X ), roundf( Y + lineH )}, col );
+			draw->AddLine( {roundf( X + 1.f ), roundf( Y - topOffset )}, {roundf( X + lineW ), roundf( Y - topOffset )}, col );
+
+			draw->AddLine( {roundf( X + W - lineW ), roundf( Y - topOffset )}, {roundf( X + W ), roundf( Y - topOffset )}, col );
+			draw->AddLine( {roundf( X + W ), roundf( Y - topOffset )}, {roundf( X + W ), roundf( Y + lineH )}, col );
+
+			draw->AddLine( {roundf( X ), roundf( Y + H - lineH )}, {roundf( X ), roundf( Y + H )}, col );
+			draw->AddLine( {roundf( X ), roundf( Y + H )}, {roundf( X + lineW ), roundf( Y + H )}, col );
+
+			draw->AddLine( {roundf( X + W - lineW ), roundf( Y + H )}, {roundf( X + W ), roundf( Y + H )}, col );
+			draw->AddLine( {roundf( X + W ), roundf( Y + H - lineH )}, {roundf( X + W ), roundf( Y + H )}, col );
 		}
 
 		static void bar( const ImVec2& box_pos, const ImVec2& box_size, float health, float max_health, const float color[4], float gap = 4.0f, float thickness = 2.2f, ImU32 outline_col = IM_COL32( 0, 0, 0, 255 ), bool use_health = true ) {

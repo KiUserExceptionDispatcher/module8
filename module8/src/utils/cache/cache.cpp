@@ -17,32 +17,32 @@ enum class aim_bone : int {
 	closest_part
 };
 
-const o::cache::part* o::cache::entity::get_bone( ) const
+const graphics::cache::part* graphics::cache::entity::get_bone( ) const
 {
-	for ( const o::cache::part& part_item : parts )
+	for ( const graphics::cache::part& part_item : parts )
 		if ( part_item.name == "Head" ) return &part_item;
-	for ( const o::cache::part& part_item : parts )
+	for ( const graphics::cache::part& part_item : parts )
 		if ( part_item.name == "HumanoidRootPart" || part_item.name == "Torso" || part_item.name == "UpperTorso" )
 			return &part_item;
 	return parts.empty( ) ? nullptr : &parts.front( );
 }
 
-const o::cache::part* o::cache::entity::get_part( const std::string& part_name ) const
+const graphics::cache::part* graphics::cache::entity::get_part( const std::string& part_name ) const
 {
-	for ( const o::cache::part& part_item : parts )
+	for ( const graphics::cache::part& part_item : parts )
 		if ( part_item.name == part_name ) 
 			return &part_item;
 
 	return nullptr;
 }
 
-const o::cache::part* o::cache::entity::get_hitbox( int bone ) const
+const graphics::cache::part* graphics::cache::entity::get_hitbox( int bone ) const
 {
-	std::function<const o::cache::part* ( std::initializer_list<const char*> )> first_of = [this]( std::initializer_list<const char*> names ) -> const o::cache::part*
+	std::function<const graphics::cache::part* ( std::initializer_list<const char*> )> first_of = [this]( std::initializer_list<const char*> names ) -> const graphics::cache::part*
 		{
 			for ( const char* n : names )
 			{
-				if ( const o::cache::part* part_item = get_part( n ) )
+				if ( const graphics::cache::part* part_item = get_part( n ) )
 					return part_item;
 			}
 			return nullptr;
@@ -51,69 +51,69 @@ const o::cache::part* o::cache::entity::get_hitbox( int bone ) const
 	switch ( static_cast<aim_bone>( bone ) )
 	{
 	case aim_bone::body:
-		if ( const o::cache::part* part_item = first_of( {"UpperTorso", "Torso", "HumanoidRootPart"} ) )
+		if ( const graphics::cache::part* part_item = first_of( {"UpperTorso", "Torso", "HumanoidRootPart"} ) )
 			return part_item;
 		break;
 	case aim_bone::left_leg:
-		if ( const o::cache::part* part_item = first_of( {"LeftUpperLeg", "Left Leg", "LeftLowerLeg", "LeftFoot"} ) )
+		if ( const graphics::cache::part* part_item = first_of( {"LeftUpperLeg", "Left Leg", "LeftLowerLeg", "LeftFoot"} ) )
 			return part_item;
 		break;
 	case aim_bone::right_leg:
-		if ( const o::cache::part* part_item = first_of( {"RightUpperLeg", "Right Leg", "RightLowerLeg", "RightFoot"} ) )
+		if ( const graphics::cache::part* part_item = first_of( {"RightUpperLeg", "Right Leg", "RightLowerLeg", "RightFoot"} ) )
 			return part_item;
 		break;
 	case aim_bone::left_arm:
-		if ( const o::cache::part* part_item = first_of( {"LeftUpperArm", "Left Arm", "LeftLowerArm", "LeftHand"} ) )
+		if ( const graphics::cache::part* part_item = first_of( {"LeftUpperArm", "Left Arm", "LeftLowerArm", "LeftHand"} ) )
 			return part_item;
 		break;
 	case aim_bone::right_arm:
-		if ( const o::cache::part* part_item = first_of( {"RightUpperArm", "Right Arm", "RightLowerArm", "RightHand"} ) )
+		if ( const graphics::cache::part* part_item = first_of( {"RightUpperArm", "Right Arm", "RightLowerArm", "RightHand"} ) )
 			return part_item;
 		break;
 	case aim_bone::closest_part:
 		break;
 	case aim_bone::head:
 	default:
-		if ( const o::cache::part* part_item = first_of( {"Head"} ) )
+		if ( const graphics::cache::part* part_item = first_of( {"Head"} ) )
 			return part_item;
 		break;
 	}
 
-	if ( const o::cache::part* part_item = get_bone( ) )
+	if ( const graphics::cache::part* part_item = get_bone( ) )
 		return part_item;
-	if ( const o::cache::part* part_item = get_part( "HumanoidRootPart" ) )
+	if ( const graphics::cache::part* part_item = get_part( "HumanoidRootPart" ) )
 		return part_item;
-	if ( const o::cache::part* part_item = get_part( "UpperTorso" ) )
+	if ( const graphics::cache::part* part_item = get_part( "UpperTorso" ) )
 		return part_item;
-	if ( const o::cache::part* part_item = get_part( "Torso" ) )
+	if ( const graphics::cache::part* part_item = get_part( "Torso" ) )
 		return part_item;
 	return nullptr;
 }
 
-o::cache::manager::~manager( )
+graphics::cache::manager::~manager( )
 {
 	this->stop( );
 }
 
-o::cache::manager& o::cache::manager::get( )
+graphics::cache::manager& graphics::cache::manager::get( )
 {
-	static o::cache::manager instance;
+	static graphics::cache::manager instance;
 	return instance;
 }
 
-bool o::cache::manager::start( )
+bool graphics::cache::manager::start( )
 {
 	if ( this->active.load( ) )
 		return false;
 
 	this->active.store( true );
-	this->statics = std::thread( &o::cache::manager::static_loop, this );
-	this->transforms = std::thread( &o::cache::manager::transform, this );
+	this->statics = std::thread( &graphics::cache::manager::static_loop, this );
+	this->transforms = std::thread( &graphics::cache::manager::transform, this );
 
 	return true;
 }
 
-bool o::cache::manager::stop( )
+bool graphics::cache::manager::stop( )
 {
 	if ( !this->active.load( ) )
 		return false;
@@ -129,13 +129,13 @@ bool o::cache::manager::stop( )
 	return true;
 }
 
-bool o::cache::manager::is_ready( ) const
+bool graphics::cache::manager::is_ready( ) const
 {
 	std::shared_lock<std::shared_mutex> lock( this->mutex_ );
 	return !this->players_.empty( );
 }
 
-void o::cache::manager::reset( )
+void graphics::cache::manager::reset( )
 {
 	this->epoch.fetch_add( 1, std::memory_order_release );
 
@@ -153,32 +153,32 @@ void o::cache::manager::reset( )
 	this->local_team = 0;
 }
 
-std::vector<o::cache::entity> o::cache::manager::get_players( ) const
+std::vector<graphics::cache::entity> graphics::cache::manager::get_players( ) const
 {
 	std::shared_lock<std::shared_mutex> lock( this->mutex_ );
 	return this->players_;
 }
 
-std::vector<o::cache::entity> o::cache::manager::snapshot_players( )
+std::vector<graphics::cache::entity> graphics::cache::manager::snapshot_players( )
 {
 	std::shared_lock<std::shared_mutex> lock( this->mutex_ );
 	return this->players_;
 }
 
-std::vector<o::cache::render_entity> o::cache::manager::get_render_entities( ) const
+std::vector<graphics::cache::render_entity> graphics::cache::manager::get_render_entities( ) const
 {
 	std::shared_lock<std::shared_mutex> lock( this->mutex_ );
 	return this->render_entities_;
 }
 
-std::size_t o::cache::manager::add_render_entities( const std::vector<o::cache::render_entity>& entities )
+std::size_t graphics::cache::manager::add_render_entities( const std::vector<graphics::cache::render_entity>& entities )
 {
 	std::unique_lock<std::shared_mutex> lock( this->mutex_ );
 	this->render_entities_.insert( this->render_entities_.end( ), entities.begin( ), entities.end( ) );
 	return entities.size( );
 }
 
-void o::cache::manager::static_loop( )
+void graphics::cache::manager::static_loop( )
 {
 	std::uintptr_t svc_cache_dm = 0;
 	std::uintptr_t svc_cache_players = 0;
@@ -452,7 +452,7 @@ void o::cache::manager::static_loop( )
 	}
 }
 
-void o::cache::manager::transform( )
+void graphics::cache::manager::transform( )
 {
 	std::uintptr_t lp_cached_model = 0;
 	std::uintptr_t lp_cached_hrp = 0;

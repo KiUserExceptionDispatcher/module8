@@ -386,6 +386,14 @@ int engine::base_part::get_material( ) {
 	return memory->read<int>( this->get_primitive( ) + offsets::Primitive::Material );
 }
 
+void engine::base_part::set_material( int material_id ) {
+	std::uintptr_t primitive = this->get_primitive( );
+	if ( !primitive ) return;
+
+	memory->write<int>( primitive + offsets::Primitive::Material, material_id );
+}
+
+
 bool engine::base_part::is_anchored( ) {
 	auto flags = memory->read<std::uint8_t>( this->get_primitive( ) + offsets::Primitive::Flags );
 	return ( flags & offsets::PrimitiveFlags::Anchored ) != 0;

@@ -420,6 +420,7 @@ namespace engine {
 		bool is_massless( );
 		int get_shape( );
 		int get_material( );
+		void set_material( int material_id );
 		bool is_anchored( );
 		bool is_can_collide( );
 		bool is_can_query( );

@@ -141,7 +141,7 @@ namespace helpers { // <i'll finish this tonight, or tmr>
 		}
 
 	public:
-		std::optional<bounding_box> get_bounding( o::cache::render_entity& entry, camera_frame& frame ) {
+		std::optional<bounding_box> get_bounding( graphics::cache::render_entity& entry, camera_frame& frame ) {
 			constexpr float max_val = ( std::numeric_limits<float>::max )( );
 			float min_x = max_val, min_y = max_val, max_x = -max_val, max_y = -max_val;
 			bool has_point = false;
@@ -151,7 +151,7 @@ namespace helpers { // <i'll finish this tonight, or tmr>
 			return finalize_bounding( min_x, min_y, max_x, max_y, has_point, frame );
 		}
 
-		std::optional<bounding_box> get_bounding( o::cache::entity& entry, camera_frame& frame ) {
+		std::optional<bounding_box> get_bounding( graphics::cache::entity& entry, camera_frame& frame ) {
 			constexpr float max_val = ( std::numeric_limits<float>::max )( );
 			constexpr float max_part_distance = 10.f;
 

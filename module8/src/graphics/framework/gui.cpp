@@ -216,6 +216,14 @@ void c_gui::render( )
 									gui->checkbox( "Enabled", &prop->enabled );
 									
 									gui->checkbox( "Bounding Box", &prop->box.enable );
+									if ( prop->box.enable ) {
+										const char* types[] = {"Full", "Half"};
+										gui->dropdown( "Box Types", &prop->box.type, types, IM_ARRAYSIZE( types ) );
+
+										if ( prop->box.type == 1 ) {
+											gui->slider_float( "Corner Length", &prop->box.length, 1.0f, 20.0f );
+										}
+									}
 									gui->checkbox( "Name", &prop->info.name );
 									if ( prop->info.name ) {
 										gui->checkbox( "Display Name", &prop->info.display_name );
@@ -230,7 +238,7 @@ void c_gui::render( )
 
 									auto* prop2 = cheat::engine_chams->prop.get( );
 
-									ImGui::Checkbox( "Enabled", &prop2->enabled );
+									gui->checkbox( "Enabled", &prop2->enabled );
 									gui->checkbox( "Alpha", &prop2->alpha );
 
 									if ( prop2->alpha ) {

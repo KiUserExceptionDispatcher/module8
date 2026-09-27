@@ -10,7 +10,7 @@
 #include <thread>
 #include <vector>
 
-namespace o {
+namespace graphics {
 	namespace cache {
 
 		struct part {
@@ -119,4 +119,4 @@ namespace o {
 	using c_cache = cache::manager;
 }
 
-inline o::cache::manager* cache = &o::cache::manager::get( );
+inline graphics::cache::manager* cache = &graphics::cache::manager::get( );
